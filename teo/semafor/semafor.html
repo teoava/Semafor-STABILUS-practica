@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>semafor</title>
+   
+</head>
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        background-image: url('depositphotos_181808840-stock-illustration-highways-top-view-cartoon.jpg');
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    .semafor-container, .pedestrian-container {
+        border: 5px solid black;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: absolute;
+        width: 80px;
+        height: 220px;
+    }
+
+    .light, .pedestrian-light {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+        opacity: 0.3;
+        transition: opacity 0.5s ease;
+    }
+
+    .red, .pedestrian-red {
+        background-color: red;
+    }
+
+    .yellow {
+        background-color: yellow;
+    }
+
+    .green, .pedestrian-green {
+        background-color: green;
+    }
+
+    .text, .pedestrian-text {
+        font-size: 14px;
+        color: white;
+        display: none;
+    }
+
+    .active, .pedestrian-active {
+        opacity: 1;
+    }
+
+    .pedestrian-button {
+        padding: 10px 20px;
+        font-size: 16px;
+        margin-top: 20px;
+        cursor: pointer;
+    }
+
+    .top-left {
+        top: 2.4vh;
+        left: 34.5vw;
+    }
+
+ 
+
+    .pedestrian {
+        bottom: 2vh; 
+        right: 28vw; 
+    }
+
+    .pedestrian-gif {
+        display: none;
+        position: absolute;
+        bottom: 69vh; 
+        right: 36vw; 
+        width: 100px; 
+        height: auto;
+    }
+</style>
+<body>
+    <div class="semafor-container top-left">
+        <div class="light red"></div>
+        <div class="text red-text">STOP!</div>
+        <div class="light yellow"></div>
+        <div class="text yellow-text">Pregătește-te!</div>
+        <div class="light green"></div>
+        <div class="text green-text">Treci!</div>
+    </div>
+
+    <div class="pedestrian-container pedestrian bottom-right">
+        <div class="pedestrian-light pedestrian-red pedestrian-active"></div>
+        <div class="pedestrian-text pedestrian-red-text">STOP!</div>
+        <div class="pedestrian-light pedestrian-green"></div>
+        <div class="pedestrian-text pedestrian-green-text">Treci!</div>
+        <button class="pedestrian-button">Apasă pentru verde!</button>
+
+
+    </div>
+    
+    <img src="pedestrian.gif" class="pedestrian-gif" alt="Pieton">
+
+    <script>
+        //schimbarea luminilor pentru semaforul auto
+        let currentLight = 0;
+        const lights = document.querySelectorAll('.light');
+        const texts = document.querySelectorAll('.text');
+
+        function changeLight() {
+            lights.forEach(light => light.classList.remove('active'));
+            texts.forEach(text => text.style.display = 'none');
+
+            lights[currentLight].classList.add('active');
+            texts[currentLight].style.display = 'block';
+
+            currentLight = (currentLight + 1) % lights.length;
+        }
+
+        changeLight();
+        setInterval(changeLight, 5000);
+
+        //semafor pietoni
+        const pedestrianRedLight = document.querySelector('.pedestrian-red');
+        const pedestrianGreenLight = document.querySelector('.pedestrian-green');
+        const pedestrianRedText = document.querySelector('.pedestrian-red-text');
+        const pedestrianGreenText = document.querySelector('.pedestrian-green-text');
+        const pedestrianButton = document.querySelector('.pedestrian-button');
+        const pedestrianGif = document.querySelector('.pedestrian-gif');
+
+        let pedestrianState = 'initial';
+
+        pedestrianButton.addEventListener('click', () => {
+            //schimb semafor auto la rosu
+            lights.forEach(light => light.classList.remove('active'));
+            texts.forEach(text => text.style.display = 'none');
+            lights[0].classList.add('active'); //rosu
+            texts[0].style.display = 'block';
+
+            if (pedestrianState === 'initial') {
+                //tranzitie pieton in jos
+                pedestrianGif.style.display = 'block';
+                pedestrianGif.style.transition = 'transform 2s';
+                pedestrianGif.style.transform = 'translateY(500px)';
+                pedestrianState = 'moved';
+            } else {
+                //tranzitie pieton tn sus
+                pedestrianGif.style.transition = 'transform 2s';
+                pedestrianGif.style.transform = 'translateY(0)';
+                pedestrianState = 'initial';
+
+            }
+
+            //schimb semaforul de pietoni la verde
+            pedestrianRedLight.classList.remove('pedestrian-active');
+            pedestrianRedText.style.display = 'none';
+            pedestrianGreenLight.classList.add('pedestrian-active');
+            pedestrianGreenText.style.display = 'block';
+
+            setTimeout(() => {
+                //schimb semaforul de pietoni la rosu
+                pedestrianGreenLight.classList.remove('pedestrian-active');
+                pedestrianGreenText.style.display = 'none';
+                pedestrianRedLight.classList.add('pedestrian-active');
+                pedestrianRedText.style.display = 'block';
+
+                if (pedestrianState === 'initial') {
+                    pedestrianGif.style.display = 'none';
+                }
+            }, 4000); // la 4 secunde
+        });
+    </script>
+</body>
+</html>
